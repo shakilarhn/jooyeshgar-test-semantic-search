@@ -1,0 +1,24 @@
+# Environment variable management
+python-dotenv>=0.20.0
+# SentenceTransformer for converting text to embeddings
+sentence-transformers>=2.2.0
+
+# Typesense client for connecting and performing vector searches
+typesense>=0.28.0
+
+# Selenium for web automation and scraping tasks
+selenium>=4.8.0
+webdriver-manager>=3.8.6
+
+# BeautifulSoup for HTML parsing and data extraction
+beautifulsoup4>=4.11.1
+
+# clean-text for cleaning and standardizing text data
+clean-text>=2.1.0
+
+# pandas and numpy for data processing and CSV handling
+pandas>=1.5.0
+numpy>=1.23.0
+
+# scikit-learn for cosine similarity computation and other ML utilities
+scikit-learn>=1.2.0
