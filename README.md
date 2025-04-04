@@ -126,29 +126,35 @@ Jooyeshgar/
 Explanation
  • Jooyeshgar/
 The root directory of your overall project.
+
  • Semantic search project/
 Contains all the project files:
- • Code/:
- • Contains Python scripts:
- • Scraping.py: Web scraping logic.
- • Dataprep.py: Data cleaning and preparation functions.
- • Embeddingmodel.py: Script for generating embeddings using SentenceTransformer.
- • Schema.py: Defines the Typesense schema.
- • Indximport.py: Script to index data into Typesense.
- • CLI.py: Command-line interface for search queries.
- • .env: Environment variables configuration file.
- • Data/:
- • Contains data files:
- • Products_data.csv: Raw scraped product data.
- • Cleaned_products_data.csv: Data after cleaning.
- • Product_embedding.json: Embeddings file.
- • Product_embeddings_with_id.json: Embeddings with IDs for indexing.
- • Config.py: A script for global project configuration.
- • Requirements.txt: List of Python dependencies.
+
+ • Code/: Contains Python scripts:
+ 
+    • Scraping.py: Web scraping logic.
+    • Dataprep.py: Data cleaning and preparation functions.
+    • Embeddingmodel.py: Script for generating embeddings using SentenceTransformer.
+    • Schema.py: Defines the Typesense schema.
+    • Indximport.py: Script to index data into Typesense.
+    • CLI.py: Command-line interface for search queries.
+    • .env: Environment variables configuration file.
+   
+ • Data/:Contains data files:
+ 
+    • Products_data.csv: Raw scraped product data.
+    • Cleaned_products_data.csv: Data after cleaning.
+    • Product_embedding.json: Embeddings file.
+    • Product_embeddings_with_id.json: Embeddings with IDs for indexing.
+    • Config.py: A script for global project configuration.
+    • Requirements.txt: List of Python dependencies.
+   
  • Semantic search Venv/
 The virtual environment for your project. This folder should be excluded from GitHub using .gitignore.
+
  • typesense_data/
 Folder used for persistent storage by the Typesense server when running in Docker.
+
  • docker-compose.yml
 Docker Compose file to run Typesense (and other services, if needed) in a containerized environment.
   
