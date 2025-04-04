@@ -1,99 +1,156 @@
-# jooyeshgar-test-semantic-searchتوضیحات پیاده سازی
+Semantic Search System for Product Data
 
-وابستگی‌ها و نصب پروژه
-برای اجرای این پروژه، از کتابخانه‌های زیر استفاده شده است که در فایل requirements.txt به صورت کامل آورده شده‌اند:
+Project Overview:
 
-python-dotenv: برای مدیریت و بارگذاری متغیرهای محیطی از فایل .env به منظور حفظ امنیت اطلاعات حساس مانند API_KEY.
+This project aims to develop a semantic search system using SentenceTransformers and Typesense.
+This system allows users to input their queries(searching for a product) and receive matching results that are semantically relevant. Instead of relying solely on keyword matching, the system compares the underlying meaning of the query with the embedded representations of the product data, enabling more accurate  search capabilities.
 
-sentence-transformers: جهت تبدیل متون به بردارهای تعبیه‌شده با استفاده از مدل paraphrase-multilingual-MiniLM-L12-v2. این مدل به دلیل پشتیبانی از چندین زبان (از جمله فارسی)، سرعت بالا و مصرف منابع کمتر نسبت به مدل‌های سنگین‌تر انتخاب شده است. اگرچه دقت آن در برخی کاربردها کمتر از مدل‌های پیچیده‌تر است، اما برای دیتاست‌های کم‌حجم و جستجوی معنایی عملکرد قابل قبولی دارد.
+The project is structured into several phases, each focusing on a critical component of the system, from data collection to processing and finally to search and user interaction.
 
-typesense: کتابخانه‌ای برای برقراری ارتباط با پایگاه داده برداری Typesense و اجرای عملیات جستجو.
+Project Phases
 
-selenium و webdriver-manager: جهت اتوماسیون وب برای استخراج داده‌ها از وب‌سایت‌ها با استفاده از مرورگر در حالت headless و مدیریت زمان‌بندی و خطاهای مربوط به Timeout.
+1. Data Collection (Phase 1)
+ • Web Scraping:
+web scraping techniques are employed ,using Selenium ,to extract product data from the website. This phase involves navigating through multiple pages, handling dynamic content, and robustly capturing key product details such as titles, descriptions, and URLs.
 
-beautifulsoup4: جهت پاکسازی و استخراج داده‌های HTML و حذف تگ‌های غیر ضروری از متون.
+ • Data Storage:
+The collected data is initially stored in a structured JSON file (data.json). This file serves as the raw data source, which is later cleaned, processed, and indexed for semantic search.
 
-clean-text: برای استانداردسازی و پاکسازی متون، شامل حذف شکست‌های خط، URLها، ایمیل‌ها و شماره تلفن‌ها.
+3. Data Processing and Indexing (Phase 2)
+ • Embedding Generation:
+In this phase, we use the SentenceTransformer model (specifically, paraphrase-multilingual-MiniLM-L12-v2) to convert textual data into high-dimensional vector embeddings. By combining both the title and description of each product, the model creates a comprehensive semantic representation for each item. This enables the system to understand and match the meaning behind user queries.
+ • Typesense Indexing:
+Once the embeddings are generated, we create a new collection within Typesense. The collection is configured with a well-defined schema that includes fields for product title, description, URL, and the corresponding embedding vector. Indexing the data in Typesense allows us to perform fast and efficient vector searches, making it possible to retrieve the most relevant products based on semantic similarity.
 
-pandas و numpy: برای پردازش داده‌ها، خواندن و نوشتن فایل‌های CSV و انجام محاسبات عددی.
+4. Search Functionality and CLI Interface
+ • User Query Input:
+A command-line interface (CLI) has been developed to interact with the system. Users can type in  queries directly into the terminal.
+ • Semantic Search:
+When a query is entered, it is first converted into an embedding using the same SentenceTransformer model. The system then performs a vector search within the Typesense collection, to rank the results by semantic closeness to return the most relevant results.
+ • Result Display:
+The search results are presented to the user in a clear and organized format, showing key details (such as the product title, description, and URL) of the most relevant found items.
 
-scikit-learn: جهت محاسبه شباهت کسینوسی بین بردارهای تعبیه‌شده که پایه رتبه‌بندی نتایج جستجو است.
+Key Features
+ • Enhanced Search Accuracy and resource management:
+By using semantic embeddings, the system retrieves products that are contextually relevant to user queries rather than just matching keywords. By adding caching options we avoid the model from overloading and we improve pace and manage the resource.
+ • Robust Data Collection:
+Advanced web scraping techniques ensure that product data is accurately and reliably captured from dynamic websites.
+ • Efficient Indexing and Retrieval:
+with multi-search capabilities we reduce the number of API calls and improve overall search speed.
+ • User-Friendly CLI:
+The command-line interface offers a simple and effective way for users to perform searches and view results, making the system accessible even without a graphical user interface. the command line is well-structured for times when the input query isn't valid. 
 
-برای نصب تمامی این وابستگی‌ها کافی است دستور زیر در ترمینال اجرا شود:
+
+
+Before setting up the project, ensure you have the following installed:
+
+Docker: Install Docker to run the Typesense server. Follow the installation instructions for your operating system on the Docker website.​
+
+Set Up Virtual Environment
+
+It’s recommended to use a virtual environment to manage project dependencies. 
+
+Install Dependencies
+With the virtual environment activated, install the required Python packages:
 pip install -r requirements.txt
-روند پیاده‌سازی پروژه
-ابتدا از سه دسته مختلف، ۱۰ عدد محصول از هر دسته استخراج و لینک‌های مربوط به آن‌ها در یک لیست ذخیره می‌شود. اطلاعات استخراج‌شده شامل عنوان محصول، توضیحات محصول و لینک محصول در یک فایل CSV ذخیره شده و با استفاده از تکنیک‌هایی مانند WebDriverWait، استفاده از try/except و اجرای مرورگر در حالت headless، مشکلاتی مانند Timeout برطرف و از ایجاد خطا جلوگیری شده است.
 
-سپس فایل CSV حاوی داده‌های استخراج‌شده جهت ورودی به مدل‌های تعبیه‌شده پیش‌پردازش می‌شود. در این مرحله، عملیات پاکسازی شامل حذف تگ‌های HTML با استفاده از BeautifulSoup و استانداردسازی متن‌ها با استفاده از کتابخانه clean-text انجام می‌شود. نتیجه‌ی این مرحله در یک فایل CSV جدید ذخیره می‌گردد تا داده‌های ورودی به مدل Embedding، تمیز و یکپارچه باشد.
+Execution Order
 
-تولید بردارهای تعبیه‌شده
-برای تولید بردارهای تعبیه‌شده از مدل sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 استفاده شده است. این مدل به دلایل زیر انتخاب شده است:
-پشتیبانی از چندین زبان، از جمله فارسی
-سبک و سریع بوده و نیاز به منابع محاسباتی نسبتاً کمی دارد
-دقت قابل قبولی در جستجوی معنایی ارائه می‌دهد
-**در شرایطی که نیاز به دقت بسیار بالا باشد، ممکن است مدل‌های پیچیده‌تری مانند BERT یا GPT مورد نیاز باشد
+The project is divided into multiple scripts, each responsible for a specific phase. Run the scripts in the following order:
+ 1. Data Preparation & Cleaning:
+ • Script: src/scraping.py , dataprep.py
+ • Purpose: scrape data from the web, Clean and organize raw scraped data; save the cleaned data in the data/ folder
 
-برای بهینه‌سازی سرعت و کارایی، از دکوریتور @lru_cache(maxsize=1) برای کش کردن مدل استفاده شده است تا مدل تنها یک بار در هر اجرای برنامه بارگذاری شود و از تکرار عملیات بارگذاری جلوگیری شود. علاوه بر این، به منظور یکپارچه‌سازی داده‌ها، ستون‌های عنوان و توضیحات هر محصول در یک رشته‌ی واحد (combined_text) ترکیب می‌شوند که به مدل کمک می‌کند تا درک جامع‌تری از محصول داشته باشد.
-
-ارتباط با پایگاه داده برداری Typesense
-پس از تولید بردارهای تعبیه‌شده، ارتباط با پایگاه داده برداری Typesense برقرار می‌شود. در این بخش:
-
-کلاینت Typesense با استفاده از API_KEY و تنظیمات سرور (host، port، protocol) از طریق متغیرهای محیطی مقداردهی اولیه می‌شود.
-
-یک کالکشن به نام products تعریف شده که شامل فیلدهایی نظیر id، Title، Description، URL، combined_text و embedding (با ابعاد 384) است.
-
-داده‌های تولیدشده از طریق عملیات Bulk Import (و به صورت upsert) به این کالکشن ارسال می‌شود. استفاده از Bulk Import باعث کاهش تعداد درخواست‌ها و افزایش سرعت ورود داده‌ها به Typesense می‌شود.
-جستجوی برداری با استفاده از multi_search و رتبه‌بندی نتایج
-برای جستجوی معنایی:
-
-ورودی کاربر از طریق رابط خط فرمان (CLI) دریافت می‌شود. کوئری وارد شده به بردار تعبیه‌شده تبدیل می‌شود.
-
-از متد multi_search برای ارسال یک درخواست چندگانه استفاده می‌شود. این روش باعث می‌شود که به جای ارسال درخواست‌های جداگانه، چندین درخواست در یک فراخوانی انجام شود و از محدودیت تعداد درخواست‌ها و زمان‌بندی جلوگیری شود.
-
-نتایج جستجو بر اساس شباهت کسینوسی رتبه‌بندی می‌شوند. در این روش، شباهت بین بردار کوئری و بردارهای محصولات با استفاده از cosine similarity محاسبه می‌شود. محصولاتی که بردارشان زاویه کمتری با بردار کوئری دارد، به عنوان نتایج دقیق‌تر نمایش داده می‌شوند.
-
-تنظیماتی مانند threshold (آستانه) می‌تواند به گونه‌ای اعمال شود که تنها محصولاتی با شباهت بالاتر از مقدار مشخص (مثلاً 0.7) به کاربر نمایش داده شود.
-
-رابط کاربری خط فرمان (CLI)
-سیستم به گونه‌ای طراحی شده است که کاربران به صورت تعاملی از طریق خط فرمان، کوئری‌های جستجو را وارد کنند. ویژگی‌های مهم این بخش عبارتند از:
-
-اعتبارسنجی ورودی: بررسی می‌شود که کاربر ورودی خالی وارد نکند.
-امکان خروج از سیستم با تایپ دستور "exit".
-نمایش نتایج جستجو به صورت خوانا (فرمت JSON) برای سهولت مشاهده و استفاده.
-
-استفاده از lru_cache باعث کاهش زمان بارگذاری مدل شده و مصرف منابع را بهینه می‌کند.
-پارامترهای مهم مانند batch_size (تعیین تعداد نمونه‌ها در هر دسته جهت پردازش)، connection_timeout_seconds (زمان حداکثر انتظار برای اتصال به Typesense) و سایر تنظیمات به دقت انتخاب شده‌اند تا عملکرد سیستم بهینه شود.
-محاسبه شباهت کسینوسی با استفاده از scikit-learn انجام می‌شود که باعث رتبه‌بندی دقیق نتایج بر اساس شباهت معنایی می‌گردد.
-
-راهنمای نصب و راه‌اندازی پروژه
-برای راه‌اندازی پروژه مراحل زیر را دنبال کنید:
-
-نصب وابستگی‌ها:
-
-pip install -r requirements.txt
-راه‌اندازی Typesense (استفاده از Docker):
-docker run -d --name typesense-server \
-  -p 8108:8108 \
-  -v $(pwd)/typesense-data:/data \
-  typesense/typesense:0.24.0 \
-  --data-dir /data \
-  --api-key=xyz123 \
-  --enable-cors
-از دستور docker ps برای بررسی اجرای سرویس استفاده کنید.
-
-با دستور زیر، سلامت Typesense را بررسی کنید:
-
-curl http://localhost:8108/health
-خروجی مورد انتظار:
-
-{"ok":true}
-اجرای پروژه:
-
-python test.py
+2. Embedding Generation:
+ • Script: e.g., src/embeddingmodel.py
+ • Purpose: Read the cleaned data, combine title and description, and generate vector embeddings using SentenceTransformer.
 
 
-**در شرایط دیتاست‌های بسیار بزرگ، ممکن است مدل انتخاب‌شده نیاز به مدل‌های پیچیده‌تر داشته باشد.
-نیاز به تنظیمات دقیق برای batch_size و connection_timeout_seconds جهت بهینه‌سازی عملکرد در محیط‌های متفاوت.
+ 3. Typesense Client Initialization & Schema Definition:
+ • Script: e.g., src/schemma.py
+ • Purpose: Initialize the Typesense client and define the collection schema.
 
+
+ 4. Indexing Data:
+ • Script: e.g., src/indximport.py
+ • Purpose: Index the data (including embeddings) into the Typesense collectionand bulk import to database.
+
+ 6. Command-Line Interface (CLI):
+ • Script: e.g., src/CLI.py
+ • Purpose: Launch the CLI for user queries.
+ • Important:** Ensure the Typesense server is running before executing this script.
+
+Installation
+Set Up Environment Variables
+Create a .env file in the project root directory and add the following lines:
+API_KEY=your_typesense_api_key(check the project document)
+TYPESENSE_HOST=localhost
+TYPESENSE_PORT=8108
+TYPESENSE_PROTOCOL=http
+COLLECTION_NAME=your_collection_nam
+MODEL_NAME=sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+
+Replace your_typesense_api_key and your_collection_name with the mentioned API key in the document.
+
+Run Typesense Server
+Use Docker to run the Typesense server:​
+
+docker run -d -p 8108:8108 --name typesense \
+  -e TYPESENSE_API_KEY=your_typesense_api_key \
+  typesense/typesense:0.28.0
+
+Additional Information
+
+Project Structure:
+Jooyeshgar/
+├── Semantic search project/
+│   ├── Code/
+│   │   ├── Scraping.py
+│   │   ├── Dataprep.py
+│   │   ├── Embeddingmodel.py
+│   │   ├── Schema.py
+│   │   ├── Indximport.py
+│   │   ├── CLI.py
+│   │   └── .env
+│   ├── Data/
+│   │   ├── Products_data.csv
+│   │   ├── Cleaned_products_data.csv
+│   │   ├── Product_embedding.json
+│   │   └── Product_embeddings_with_id.json
+│   ├── Config.py
+│   └── Requirements.txt
+├── Semantic search Venv/   (virtual environment folder – add to .gitignore)
+├── typesense_data/         (persistent Typesense data folder)
+└── docker-compose.yml      (for running Typesense and other services)
+
+Explanation
+ • Jooyeshgar/
+The root directory of your overall project.
+ • Semantic search project/
+Contains all the project files:
+ • Code/:
+ • Contains Python scripts:
+ • Scraping.py: Web scraping logic.
+ • Dataprep.py: Data cleaning and preparation functions.
+ • Embeddingmodel.py: Script for generating embeddings using SentenceTransformer.
+ • Schema.py: Defines the Typesense schema.
+ • Indximport.py: Script to index data into Typesense.
+ • CLI.py: Command-line interface for search queries.
+ • .env: Environment variables configuration file.
+ • Data/:
+ • Contains data files:
+ • Products_data.csv: Raw scraped product data.
+ • Cleaned_products_data.csv: Data after cleaning.
+ • Product_embedding.json: Embeddings file.
+ • Product_embeddings_with_id.json: Embeddings with IDs for indexing.
+ • Config.py: A script for global project configuration.
+ • Requirements.txt: List of Python dependencies.
+ • Semantic search Venv/
+The virtual environment for your project. This folder should be excluded from GitHub using .gitignore.
+ • typesense_data/
+Folder used for persistent storage by the Typesense server when running in Docker.
+ • docker-compose.yml
+Docker Compose file to run Typesense (and other services, if needed) in a containerized environment.
+  
 
 
