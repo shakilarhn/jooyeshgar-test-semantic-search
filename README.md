@@ -184,6 +184,10 @@ Folder used for persistent storage by the Typesense server when running in Docke
 
  • docker-compose.yml
 Docker Compose file to run Typesense (and other services, if needed) in a containerized environment.
-  
+
+##sample results : the item "پرینتر " is entered by the user and most relevant results are shown in order of relevance : 
+![image](https://github.com/user-attachments/assets/a16ad907-a3b0-4d6a-9398-09c83db78887)
+![image](https://github.com/user-attachments/assets/59da2d91-72a4-4422-b78a-3ef6e6d03bfb)
+
 
 
