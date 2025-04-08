@@ -43,7 +43,11 @@ The system consists of several key components, including **web scraping, data pr
 ## ⚙️ Installation Guide
 
 ### 1️. Set Up Virtual Environment
-
+clone the repository : 
+```
+git clone https://github.com/shakilarhn/jooyeshgar-test-semantic-search.git
+cd jooyeshgar-test-semantic-search
+```
 ### 2️. Install Dependencies
  
 Before setting up the project, ensure you have the following installed:
